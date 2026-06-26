@@ -151,25 +151,44 @@ body{display:flex;align-items:center;justify-content:center;}
 .bulk.sel{background:var(--accent);border-color:var(--accent);}
 
 /* ---------- 장비 ---------- */
+.equip-note{background:#0d0a22;border:1px solid var(--line);border-radius:10px;padding:9px 11px;
+  font-size:11px;color:#cfd4ff;line-height:1.6;margin-bottom:12px;}
 .equip-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
-.eq-slot{background:var(--panel2);border:2px solid var(--line);border-radius:14px;padding:10px;text-align:center;}
+.eq-slot{position:relative;background:var(--panel2);border:2px solid var(--line);border-radius:14px;padding:10px;text-align:center;}
+.eq-slot.on{background:linear-gradient(160deg,#26204f,#1b1640);}
+.eq-badge{position:absolute;top:6px;right:6px;font-size:9px;font-weight:800;color:#06240f;background:var(--good);
+  border-radius:6px;padding:2px 5px;}
 .eq-ic{font-size:28px;}
 .eq-nm{font-size:12px;font-weight:800;margin-top:2px;}
 .eq-rar{font-size:11px;font-weight:800;margin-top:3px;}
-.eq-pow{font-size:11px;color:var(--good);font-weight:700;}
+.eq-pow{font-size:11px;color:#cfd4ff;font-weight:700;}
+.eq-pow b{color:var(--good);}
 .eq-empty{font-size:11px;color:var(--sub);margin-top:6px;}
 .eq-up{margin-top:7px;width:100%;padding:6px;border:none;border-radius:9px;background:linear-gradient(#ffd23f,#ffae42);
   color:#3a2400;font-weight:800;font-size:11px;cursor:pointer;}
 .eq-up.no{background:#3a3560;color:#7a7aa0;}
 .eq-up:active{transform:scale(.95);}
-.inv-h{font-size:14px;margin:16px 0 8px;color:var(--sub);}
-.inv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
-.inv-item{background:var(--panel2);border:2px solid var(--line);border-radius:12px;padding:8px 6px;text-align:center;}
-.ii-ic{font-size:22px;} .ii-rar{font-size:10px;font-weight:800;} .ii-pow{font-size:10px;color:var(--good);}
-.ii-btns{display:flex;gap:4px;margin-top:5px;}
-.ii-btns button{flex:1;padding:5px 0;border:none;border-radius:7px;font-size:10px;font-weight:800;cursor:pointer;
-  background:var(--accent);color:#fff;}
-.ii-btns .sell{background:#3a3560;}
+.inv-head{display:flex;align-items:center;justify-content:space-between;margin:18px 0 8px;}
+.inv-h{font-size:14px;color:var(--sub);}
+.cleanup-btn{padding:6px 10px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);
+  color:#ff9d5c;font-size:11px;font-weight:800;cursor:pointer;}
+.cleanup-btn:active{transform:scale(.95);}
+.inv-empty{text-align:center;color:var(--sub);font-size:12px;padding:24px 0;line-height:1.7;}
+.inv-list{display:flex;flex-direction:column;gap:7px;}
+.inv-row{display:flex;align-items:center;gap:10px;background:var(--panel2);border-radius:12px;
+  border-left:4px solid var(--line);padding:9px 11px;}
+.inv-row.is-up{background:linear-gradient(90deg,#1d3320,var(--panel2));}
+.ir-ic{font-size:24px;width:32px;text-align:center;}
+.ir-mid{flex:1;min-width:0;}
+.ir-nm{font-size:12px;font-weight:800;}
+.ir-pow{font-size:11px;color:#cfd4ff;margin-top:2px;}
+.cmp{font-weight:800;}
+.cmp.up{color:#5fe08a;} .cmp.down{color:#ff6f86;} .cmp.new{color:#ffd23f;} .cmp.same{color:var(--sub);}
+.ir-btns{display:flex;gap:5px;flex-shrink:0;}
+.ir-btns button{padding:8px 12px;border:none;border-radius:9px;font-size:11px;font-weight:800;cursor:pointer;}
+.ir-equip{background:linear-gradient(#5fe08a,#39c46f);color:#06240f;}
+.ir-sell{background:#3a3560;color:#cfd4ff;}
+.ir-btns button:active{transform:scale(.93);}
 
 /* ---------- 환생 ---------- */
 .prestige-top{background:linear-gradient(135deg,#2a1f5e,#1a1438);border:1px solid var(--accent);

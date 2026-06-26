@@ -419,6 +419,22 @@ G.game = (function () {
     G.audio.play('coin'); G.ui.refreshEquip(); G.ui.refreshTopBar(); queueSave();
     return val;
   }
+  // 현재 장착보다 약하거나 같은 미장착 장비 일괄 판매
+  function sellWeakDuplicates() {
+    let count = 0, gold = 0;
+    for (let i = state.inv.length - 1; i >= 0; i--) {
+      const it = state.inv[i];
+      const eq = state.equipped[it.slot];
+      if (eq === it) continue;                    // 장착 중 제외
+      if (!eq || itemPower(it) > itemPower(eq)) continue; // 더 강하거나 빈 슬롯이면 보존
+      state.inv.splice(i, 1);
+      gold += Math.floor(150 * Math.pow(2, it.rarity) * (1 + it.level));
+      state.insurance += (it.rarity + 1);
+      count++;
+    }
+    if (count) { state.gold += gold; G.audio.play('coin'); G.haptic.medium(); refreshStats(); G.ui.refreshEquip(); G.ui.refreshTopBar(); queueSave(); }
+    return { count, gold };
+  }
 
   /* ============================ 환생(Prestige) ============================ */
   function prestigeGain() {
@@ -602,7 +618,7 @@ G.game = (function () {
     D, PERKS,
     performTap, buyUpgrade, upgradeCost,
     useSkill, skillUnlocked, skillReady,
-    itemPower, equipItem, upgradeItem, sellItem, itemUpgradeCost,
+    itemPower, equipItem, upgradeItem, sellItem, sellWeakDuplicates, itemUpgradeCost,
     prestigeGain, canPrestige, doPrestige, buyPerk, perkCost,
     claimAttendance, spinRoulette, openFreeBox, claimOffline,
     metricValue, computeStats,

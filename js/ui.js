@@ -294,53 +294,90 @@ G.ui = (function () {
   /* ---------- 장비 패널 ---------- */
   function renderEquip() {
     const body = $('panelBody'); if (!body) return;
+    const scroll = body.scrollTop;
     const s = api.state;
-    let h = '<div class="equip-grid">';
+    let h = '<div class="equip-note">💡 같은 장비라도 <b>등급·능력치가 제각각</b>이에요. 보유 장비의 <b style="color:#5fe08a">▲</b>는 지금 낀 것보다 <b>강함</b>, <b style="color:#ff6f86">▼</b>는 약함을 뜻해요.</div>';
+    h += '<div class="equip-grid">';
     api.D.slots.forEach(slot => {
       const item = s.equipped[slot.id];
       const rar = item ? api.D.rarities[item.rarity] : null;
-      h += `<div class="eq-slot" style="border-color:${rar ? rar.color : '#33405e'}">
+      h += `<div class="eq-slot ${item ? 'on' : ''}" style="border-color:${rar ? rar.color : '#33405e'}">
+        ${item ? '<div class="eq-badge">✓ 장착 중</div>' : ''}
         <div class="eq-ic">${slot.icon}</div>
         <div class="eq-nm">${slot.name}</div>
         ${item ? `<div class="eq-rar" style="color:${rar.color}">${rar.name} +${item.level}</div>
-          <div class="eq-pow">+${(api.itemPower(item) * 100).toFixed(0)}% ${statName(slot.stat)}</div>
-          <button class="eq-up" data-up="${item.id}">강화 ${G.fmt.num(api.itemUpgradeCost(item))}</button>`
+          <div class="eq-pow">${statName(slot.stat)} <b>+${(api.itemPower(item) * 100).toFixed(0)}%</b></div>
+          <button class="eq-up ${s.gold >= api.itemUpgradeCost(item) ? '' : 'no'}" data-up="${item.id}">강화 ${G.fmt.num(api.itemUpgradeCost(item))}</button>`
           : '<div class="eq-empty">미장착</div>'}
       </div>`;
     });
     h += '</div>';
-    // 인벤토리(미장착)
-    const others = s.inv.filter(it => s.equipped[it.slot] !== it);
+
+    // 보유 장비(미장착) — 능력치 높은 순, 현재 장착과 비교 표시
+    const others = s.inv.filter(it => s.equipped[it.slot] !== it).slice();
+    others.sort((a, b) => api.itemPower(b) - api.itemPower(a));
+    const weakCount = others.filter(it => { const eq = s.equipped[it.slot]; return eq && api.itemPower(it) <= api.itemPower(eq); }).length;
+
     if (others.length) {
-      h += '<h3 class="inv-h">보유 장비</h3><div class="inv-grid">';
-      others.slice(-30).reverse().forEach(it => {
+      h += `<div class="inv-head"><h3 class="inv-h">보유 장비 ${others.length}개</h3>` +
+        (weakCount ? `<button class="cleanup-btn" id="cleanupBtn">🧹 약한 장비 ${weakCount}개 판매</button>` : '') + `</div>`;
+      h += '<div class="inv-list">';
+      others.slice(0, 40).forEach(it => {
         const slot = api.D.slots.find(x => x.id === it.slot);
         const rar = api.D.rarities[it.rarity];
-        h += `<div class="inv-item" style="border-color:${rar.color}">
-          <div class="ii-ic">${slot.icon}</div>
-          <div class="ii-rar" style="color:${rar.color}">${rar.name}</div>
-          <div class="ii-pow">+${(api.itemPower(it) * 100).toFixed(0)}%</div>
-          <div class="ii-btns"><button data-equip="${it.id}">장착</button><button class="sell" data-sell="${it.id}">판매</button></div>
+        const eq = s.equipped[it.slot];
+        const p = api.itemPower(it), ep = eq ? api.itemPower(eq) : 0;
+        const better = !eq || p > ep;
+        const dp = ((p - ep) * 100), absdp = Math.abs(dp);
+        let cmp;
+        if (!eq) cmp = '<span class="cmp new">✨ 장착 가능</span>';
+        else if (absdp < 0.5) cmp = '<span class="cmp same">≈ 비슷함</span>';
+        else if (dp > 0) cmp = `<span class="cmp up">▲ ${absdp.toFixed(0)}%p 강함</span>`;
+        else cmp = `<span class="cmp down">▼ ${absdp.toFixed(0)}%p 약함</span>`;
+        h += `<div class="inv-row ${better ? 'is-up' : ''}" style="border-left-color:${rar.color}">
+          <div class="ir-ic">${slot.icon}</div>
+          <div class="ir-mid">
+            <div class="ir-nm">${slot.name} <span style="color:${rar.color}">${rar.name}+${it.level}</span></div>
+            <div class="ir-pow">${statName(slot.stat)} +${(p * 100).toFixed(0)}% &nbsp;${cmp}</div>
+          </div>
+          <div class="ir-btns">
+            ${better ? `<button class="ir-equip" data-equip="${it.id}">장착</button>` : ''}
+            <button class="ir-sell" data-sell="${it.id}">판매</button>
+          </div>
         </div>`;
       });
       h += '</div>';
+    } else {
+      h += '<div class="inv-empty">보유한 여분 장비가 없어요.<br>보스를 처치하면 새 장비를 얻습니다.</div>';
     }
-    body.innerHTML = h;
+
+    body.innerHTML = h; body.scrollTop = scroll;
     const find = (id) => s.inv.find(x => x.id == id) || Object.values(s.equipped).find(x => x && x.id == id);
+
     body.querySelectorAll('[data-up]').forEach(b => b.addEventListener('click', () => {
-      const item = find(b.dataset.up);
-      const ok = api.upgradeItem(item);
+      const ok = api.upgradeItem(find(b.dataset.up));
       if (!ok) { shakeEl(b); toast('골드가 부족합니다', '#ff5a6e'); }
       else refreshTitleBar();
     }));
     body.querySelectorAll('[data-equip]').forEach(b => b.addEventListener('click', () => {
-      api.equipItem(find(b.dataset.equip)); refreshTitleBar(); toast('장착 완료!', '#5fe08a');
+      const item = find(b.dataset.equip); if (!item) return;
+      const slot = api.D.slots.find(x => x.id === item.slot);
+      const old = s.equipped[item.slot];
+      const op = old ? (api.itemPower(old) * 100).toFixed(0) : 0;
+      const np = (api.itemPower(item) * 100).toFixed(0);
+      api.equipItem(item); refreshTitleBar();
+      toast(old ? `${slot.name} 교체! ${statName(slot.stat)} ${op}% → ${np}%` : `${slot.name} 장착! ${statName(slot.stat)} +${np}%`, '#5fe08a');
     }));
     body.querySelectorAll('[data-sell]').forEach(b => b.addEventListener('click', () => {
       const val = api.sellItem(find(b.dataset.sell));
-      if (val) toast(`판매 완료 +${G.fmt.num(val)} G`, '#ffd23f');
+      if (val) toast(`판매 +${G.fmt.num(val)} G`, '#ffd23f');
       else { shakeEl(b); toast('판매할 수 없습니다', '#ff5a6e'); }
     }));
+    const cb = $('cleanupBtn');
+    if (cb) cb.addEventListener('click', () => {
+      const r = api.sellWeakDuplicates();
+      if (r.count) toast(`약한 장비 ${r.count}개 판매 +${G.fmt.num(r.gold)} G`, '#ffd23f');
+    });
   }
   function statName(s) { return { tap: '탭공격', dps: '자동공격', all: '전체공격', gold: '골드', crit: '치명타' }[s] || s; }
 
