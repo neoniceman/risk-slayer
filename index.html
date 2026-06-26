@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1a1430">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>보험 히어로즈 : 리스크 슬레이어</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="game">
+  <!-- 배경 + 몬스터 캔버스 -->
+  <canvas id="canvas"></canvas>
+  <!-- 탭 입력 레이어(플레이필드) -->
+  <div id="tapLayer"></div>
+  <div id="floatHost"></div>
+
+  <!-- 상단 자원바 -->
+  <div id="topbar">
+    <div class="res gold"><span class="res-ic">💰</span><span id="resGold">0</span></div>
+    <div class="res dia"><span class="res-ic">💎</span><span id="resDia">0</span></div>
+    <div class="res safety"><span class="res-ic">🛡️</span><span id="resSafety">0</span></div>
+    <div class="res ins"><span class="res-ic">🎖️</span><span id="resInsurance">0</span></div>
+  </div>
+
+  <!-- 타이틀/스테이지 정보 -->
+  <div id="titleInfo">
+    <div class="ti-left"><span id="zoneName">도심</span> · <span id="stageNum">스테이지 1</span></div>
+    <div class="ti-right"><span id="playerTitle">수습 히어로</span></div>
+  </div>
+  <div id="statStrip">
+    <span>👊 탭 <b id="statTap">0</b></span>
+    <span>⚙️ 자동 <b id="statDps">0</b>/s</span>
+  </div>
+
+  <!-- 몬스터 정보 -->
+  <div id="monsterInfo">
+    <div id="monName">몬스터</div>
+    <div id="hpBar"><div id="hpFill"></div><div id="hpText">0/0</div></div>
+    <div id="stageProgBar"><div id="stageProgFill"></div></div>
+    <div id="stageProg">0 / 10</div>
+    <div id="bossTimer">⏱ 0:30</div>
+  </div>
+
+  <div id="combo"></div>
+  <div id="buffs"></div>
+  <div id="stageBanner"></div>
+
+  <!-- 스킬바 -->
+  <div id="skillbar"></div>
+
+  <!-- 바텀 네비 -->
+  <div id="bottomnav"></div>
+
+  <!-- 슬라이드 패널 -->
+  <div id="panelHost"></div>
+
+  <!-- 토스트/모달 -->
+  <div id="toasts"></div>
+  <div id="modalHost"></div>
+
+  <!-- 시작 오버레이(오디오 활성화용) -->
+  <div id="startOverlay">
+    <div class="start-card">
+      <div class="start-logo">🦸‍♂️🛡️</div>
+      <h1>보험 히어로즈</h1>
+      <h2>리스크 슬레이어</h2>
+      <p>세상의 모든 위험을 처치하라!</p>
+      <button id="startBtn">▶ 게임 시작</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/engine.js"></script>
+<script src="js/data.js"></script>
+<script src="js/monsterArt.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
